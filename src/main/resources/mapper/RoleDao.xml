@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cmy.dao.RoleDao">
+    <select id="getRoleList" resultType="Role" parameterType="map">
+         select * from role
+         <where>
+             <if test="roleName!=null and roleName!=''">
+                and roleName = #{roleName}
+             </if>
+             <if test="isStart!=-1">
+                and isStart=#{isStart}
+             </if>
+         </where>
+    </select>
+
+    <insert id="addRole">
+        insert into role(roleName,creationtime,createby,lastUpdatetime,isStart) VALUES (#{roleName},CURRENT_DATE(),'admin',CURRENT_DATE(),#{isStart})
+    </insert>
+
+    <select id="getRoleCount" parameterType="string" resultType="int">
+        select count(id) from role where rolename=#{roleName}
+    </select>
+
+    <select id="existsUser" parameterType="int" resultType="int">
+        SELECT roleid FROM role_user ru INNER JOIN role r ON r.id=ru.`roleid` HAVING COUNT(userid)>0
+    </select>
+
+    <delete id="deleteRole" >
+       delete from role where id IN 
+       <foreach collection="array" close=")" open="(" item="ids" separator=",">
+           #{ids}
+       </foreach>
+    </delete>
+</mapper>
